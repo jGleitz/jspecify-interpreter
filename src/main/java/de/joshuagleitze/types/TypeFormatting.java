@@ -49,15 +49,19 @@ public class TypeFormatting {
 			appendFormatted(result, typeVariable);
 		} else if (type instanceof AnnotatedWildcardType wildcard) {
 			appendFormatted(result, wildcard);
+		} else if (type instanceof BaseLocatedTypeUse baseLocatedTypeUse) {
+			baseLocatedTypeUse.appendTo(result);
 		} else {
 			appendFormattedAnnotationsAndSeparator(result, type);
+			appendOuterType(result, type);
 			appendFormatted(result, type.getType());
 		}
 	}
 
 	static void appendFormatted(StringBuilder result, AnnotatedParameterizedType type) {
 		appendFormattedAnnotationsAndSeparator(result, type);
-		appendFormatted(result, (((ParameterizedType) type.getType()).getRawType()));
+		appendOuterType(result, type);
+		appendFormatted(result, ((ParameterizedType) type.getType()).getRawType());
 		var parameters = type.getAnnotatedActualTypeArguments();
 		if (parameters.length > 0) {
 			result.append('<');
@@ -111,6 +115,14 @@ public class TypeFormatting {
 				result.append(')');
 			}
 			result.append(' ');
+		}
+	}
+
+	static void appendOuterType(StringBuilder result, AnnotatedType type) {
+		var outerType = type.getAnnotatedOwnerType();
+		if (outerType != null) {
+			appendFormatted(result, outerType);
+			result.append('.');
 		}
 	}
 

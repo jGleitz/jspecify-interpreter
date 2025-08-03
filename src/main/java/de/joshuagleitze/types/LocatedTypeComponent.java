@@ -1,44 +1,37 @@
 package de.joshuagleitze.types;
 
-import lombok.experimental.Delegate;
-import org.jspecify.annotations.Nullable;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
-import java.util.List;
 
 import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
-import static de.joshuagleitze.types.LocatedTypeUses.componentsOf;
 
 /// A type use by a component of an [AnnotatedParameterizedType] or an [AnnotatedArrayType]. For example, `@Nullable String` in
 /// `List<@Nullable String>` or `@Nullable String[]`.
-public record LocatedTypeComponent(
-		LocatedTypeUse outerType,
-		@Delegate AnnotatedType component
-) implements LocatedTypeUse {
+@RequiredArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+public final class LocatedTypeComponent extends BaseLocatedTypeUse {
+	private final LocatedTypeUse outerType;
+	private final AnnotatedType component;
+
 	/// The type use this is a component of.
 	@Override
-	public LocatedTypeUse declaration() {
+	public LocatedTypeUse getDeclaration() {
 		return outerType;
 	}
 
 	@Override
-	public List<LocatedTypeComponent> components() {
-		return componentsOf(this, component);
+	protected AnnotatedType underlyingType() {
+		return component;
 	}
 
 	@Override
-	public @Nullable LocatedOuterType getAnnotatedOwnerType() {
-		return LocatedTypeUse.super.getAnnotatedOwnerType();
-	}
-
-	@Override
-	public String toString() {
-		var result = new StringBuilder();
+	void appendTo(StringBuilder result) {
 		appendFormatted(result, component);
 		result.append(" in ");
-		result.append(outerType);
-		return result.toString();
+		appendFormatted(result, outerType);
 	}
 }

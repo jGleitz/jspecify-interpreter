@@ -1,50 +1,44 @@
 package de.joshuagleitze.types;
 
-import lombok.experimental.Delegate;
-import org.jspecify.annotations.Nullable;
+import lombok.EqualsAndHashCode;
 
 import java.lang.reflect.AnnotatedType;
-import java.util.List;
 
 import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
-import static de.joshuagleitze.types.LocatedTypeUses.componentsOf;
 
-/// A type use by a declaration of a superclass of a [Class]. For example, `ArrayList<@Nullable T>` in
-/// `class NullList<T> extends ArrayList<@Nullable T>`.
-///
-/// @param declaration   The class declaring the superclass.
-/// @param extendedClass The extended class.
-public record LocatedSuperclass(Class<?> declaration, @Delegate AnnotatedType extendedClass) implements LocatedTypeUse {
+/// A type use by a declaration of a superclass of a [Class]. For example, `ArrayList<@Nullable T>` in `class NullList<T> extends
+/// ArrayList<@Nullable T>`.
+@EqualsAndHashCode(callSuper = false)
+public final class LocatedSuperclass extends BaseLocatedTypeUse {
+	private final Class<?> declaringClass;
+	@EqualsAndHashCode.Exclude
+	private final AnnotatedType superClassType;
 
-	public LocatedSuperclass(Class<?> declaration) {
-		this(declaration, validateExtendedClass(declaration));
-	}
-
-	@Override
-	public List<LocatedTypeComponent> components() {
-		return componentsOf(this, extendedClass);
-	}
-
-	private static AnnotatedType validateExtendedClass(Class<?> declaration) {
-		var superclass = declaration.getAnnotatedSuperclass();
-		if (superclass == null) {
-			throw new IllegalArgumentException(declaration.getName() + " does not have a superclass!");
+	public LocatedSuperclass(Class<?> declaringClass) {
+		var superClass = declaringClass.getAnnotatedSuperclass();
+		if (superClass == null) {
+			throw new IllegalArgumentException(declaringClass.getName() + " does not have a superclass!");
 		}
-		return superclass;
+		this.declaringClass = declaringClass;
+		this.superClassType = superClass;
+	}
+
+	/// The class declaring the superclass.
+	@Override
+	public Class<?> getDeclaration() {
+		return declaringClass;
 	}
 
 	@Override
-	public @Nullable LocatedOuterType getAnnotatedOwnerType() {
-		return LocatedTypeUse.super.getAnnotatedOwnerType();
+	protected AnnotatedType underlyingType() {
+		return superClassType;
 	}
 
 	@Override
-	public String toString() {
-		var result = new StringBuilder();
+	void appendTo(StringBuilder result) {
 		result.append("extends ");
-		appendFormatted(result, extendedClass);
-		result.append(" in ");
-		result.append(declaration.getSimpleName());
-		return result.toString();
+		appendFormatted(result, superClassType);
+		result.append(" of ");
+		result.append(declaringClass.getSimpleName());
 	}
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"NullableProblems", "unused"})
 public class ClassesWithSuperclasses {
-	public static class Superclass extends ArrayList<String> {}
+	public static class Superclass extends ArrayList<@Nullable String> {}
 
 	public static class NullableSuperclass extends @Nullable ArrayList<@Nullable String> {}
 

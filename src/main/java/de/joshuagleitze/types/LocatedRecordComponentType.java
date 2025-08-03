@@ -1,46 +1,41 @@
 package de.joshuagleitze.types;
 
-import lombok.experimental.Delegate;
-import org.jspecify.annotations.Nullable;
+import lombok.EqualsAndHashCode;
 
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.RecordComponent;
-import java.util.List;
 
 import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
-import static de.joshuagleitze.types.LocatedTypeUses.componentsOf;
 
 /// A type use by a [RecordComponent]. For example, `@Nullable String` in `record Person(@Nullable String name)`.
-public record LocatedRecordComponentType(RecordComponent recordComponent) implements LocatedTypeUse {
-	@Delegate
-	private AnnotatedType annotatedType() {
-		return recordComponent.getAnnotatedType();
+@EqualsAndHashCode(callSuper = false)
+public final class LocatedRecordComponentType extends BaseLocatedTypeUse {
+	private final RecordComponent recordComponent;
+	@EqualsAndHashCode.Exclude
+	private final AnnotatedType recordComponentType;
+
+	public LocatedRecordComponentType(RecordComponent recordComponent) {
+		this.recordComponent = recordComponent;
+		this.recordComponentType = recordComponent.getAnnotatedType();
 	}
 
 	/// The [RecordComponent] declaring this type use.
 	@Override
-	public RecordComponent declaration() {
+	public RecordComponent getDeclaration() {
 		return recordComponent;
 	}
 
 	@Override
-	public List<LocatedTypeComponent> components() {
-		return componentsOf(this, annotatedType());
+	protected AnnotatedType underlyingType() {
+		return recordComponentType;
 	}
 
 	@Override
-	public @Nullable LocatedOuterType getAnnotatedOwnerType() {
-		return LocatedTypeUse.super.getAnnotatedOwnerType();
-	}
-
-	@Override
-	public String toString() {
-		var result = new StringBuilder();
-		appendFormatted(result, annotatedType());
+	void appendTo(StringBuilder result) {
+		appendFormatted(result, recordComponentType);
 		result.append(' ')
 				.append(recordComponent.getName())
-				.append(" in ")
+				.append(" of ")
 				.append(recordComponent.getDeclaringRecord().getSimpleName());
-		return result.toString();
 	}
 }

@@ -1,46 +1,42 @@
 package de.joshuagleitze.types;
 
-import lombok.experimental.Delegate;
-import org.jspecify.annotations.Nullable;
+import lombok.EqualsAndHashCode;
 
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Parameter;
-import java.util.List;
 
 import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
-import static de.joshuagleitze.types.LocatedTypeUses.componentsOf;
 
 /// A type use by a [Parameter]. For example, `@Nullable String` in `void isFriend(@Nullable String name)`.
-public record LocatedParameterType(Parameter parameter) implements LocatedTypeUse {
-	@Delegate
-	private AnnotatedType annotatedType() {
-		return parameter.getAnnotatedType();
+@EqualsAndHashCode(callSuper = false)
+public final class LocatedParameterType extends BaseLocatedTypeUse {
+	private final Parameter parameter;
+	@EqualsAndHashCode.Exclude
+	private final AnnotatedType parameterType;
+
+	public LocatedParameterType(Parameter parameter) {
+		this.parameter = parameter;
+		this.parameterType = parameter.getAnnotatedType();
 	}
 
 	/// The [Parameter] declaring this type use.
 	@Override
-	public Parameter declaration() {
+	public Parameter getDeclaration() {
 		return parameter;
 	}
 
 	@Override
-	public List<LocatedTypeComponent> components() {
-		return componentsOf(this, annotatedType());
+	protected AnnotatedType underlyingType() {
+		return parameter.getAnnotatedType();
 	}
 
-	@Override
-	public @Nullable LocatedOuterType getAnnotatedOwnerType() {
-		return LocatedTypeUse.super.getAnnotatedOwnerType();
-	}
 
 	@Override
-	public String toString() {
-		var result = new StringBuilder();
-		appendFormatted(result, annotatedType());
+	void appendTo(StringBuilder result) {
+		appendFormatted(result, parameterType);
 		result.append(' ');
 		result.append(parameter.getName());
-		result.append(" in ");
+		result.append(" declared by ");
 		appendFormatted(result, parameter.getDeclaringExecutable());
-		return result.toString();
 	}
 }
