@@ -9,6 +9,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/test-fixtures" />
+            <option value="$PROJECT_DIR$/test-fixtures/unnamed-module" />
           </set>
         </option>
       </GradleProjectSettings>

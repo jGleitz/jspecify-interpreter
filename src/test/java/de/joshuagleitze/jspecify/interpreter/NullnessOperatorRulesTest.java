@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 		// language=CSV
 		textBlock = """
 				# name,                                                  expectedOperatorIfUnspecified, examplesBasePackage
-				'without @NullMarked',                                   UNSPECIFIED,                   de.joshuagleitze.jspecify.interpreter.examples.notmarked
-				'in a @NullMarked package',                              NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.examples.nullmarked
-				'in a @NullMarked class',                                NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.examples.nullmarkedclasses
-				'in a @NullUnmarked class within a @NullMarked package', UNSPECIFIED,                   de.joshuagleitze.jspecify.interpreter.examples.nullmarked.nullunmarkedclasses
+				'without @NullMarked',                                   UNSPECIFIED,                   de.joshuagleitze.jspecify.interpreter.fixtures.notmarked
+				'in a @NullMarked package',                              NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedpackage
+				'in a @NullMarked class',                                NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedclasses
+				'in a @NullUnmarked class within a @NullMarked package', UNSPECIFIED,                   de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedpackage.nullunmarkedclasses
 				"""
 )
 @TestInstance(PER_CLASS)

@@ -1,6 +1,6 @@
 package de.joshuagleitze.jspecify.interpreter;
 
-import de.joshuagleitze.jspecify.interpreter.examples.*;
+import de.joshuagleitze.jspecify.interpreter.fixtures.*;
 import de.joshuagleitze.types.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
