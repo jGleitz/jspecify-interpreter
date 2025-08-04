@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 				# name,                                                  expectedOperatorIfUnspecified, examplesBasePackage
 				'without @NullMarked',                                   UNSPECIFIED,                   de.joshuagleitze.jspecify.interpreter.fixtures.notmarked
 				'in a @NullMarked package',                              NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedpackage
-				'in a @NullMarked class',                                NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedclasses
-				'in a @NullUnmarked class within a @NullMarked package', UNSPECIFIED,                   de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedpackage.nullunmarkedclasses
+				'in a @NullMarked class',                                NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedclass
+				'in a @NullUnmarked class within a @NullMarked package', UNSPECIFIED,                   de.joshuagleitze.jspecify.interpreter.fixtures.nullunmarkedclass
 				"""
 )
 @TestInstance(PER_CLASS)

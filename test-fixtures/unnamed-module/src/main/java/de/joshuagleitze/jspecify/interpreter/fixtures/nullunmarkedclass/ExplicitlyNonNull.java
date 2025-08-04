@@ -1,12 +1,11 @@
-package de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedclasses;
+package de.joshuagleitze.jspecify.interpreter.fixtures.nullunmarkedclass;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 
 @SuppressWarnings("unused")
-@NullMarked
+@org.jspecify.annotations.NullUnmarked
 public interface ExplicitlyNonNull<T> {
 	@NonNull
 	String nullableString(@NonNull String input);

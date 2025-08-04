@@ -45,20 +45,24 @@ tasks.test {
 }
 
 
-var testFixturesBasePackage = "de.joshuagleitze.jspecify.interpreter.fixtures"
-var testFixturesBaseDir = project.layout.projectDirectory.dir("test-fixtures/unnamed-module/src/main/java")
+val testFixturesBasePackage = "de.joshuagleitze.jspecify.interpreter.fixtures"
+val testFixturesBaseDir = project.layout.projectDirectory.dir("test-fixtures/unnamed-module/src/main/java")
     .dir(testFixturesBasePackage.replace('.', '/'))
 
 fun Sync.fromTestFixturesPackage(packageName: String) {
     from(testFixturesBaseDir.dir(packageName.replace('.', '/')))
+    inputs.property("inputPackage", "$testFixturesBasePackage.$packageName")
 }
 
 fun Sync.intoTestFixturesPackage(packageName: String) {
     into(testFixturesBaseDir.dir(packageName.replace('.', '/')))
+    inputs.property("outputPackage", "$testFixturesBasePackage.$packageName")
     filter {
+        val inputPackage: String by inputs.properties
+        val outputPackage: String by inputs.properties
         it.replace(
-            Regex("^package " + Regex.escape(testFixturesBasePackage) + """\..*;$"""),
-            "$testFixturesBasePackage.$packageName"
+            Regex("^package " + Regex.escape(inputPackage) + ";$"),
+            "package $outputPackage;"
         )
     }
 }
@@ -69,16 +73,23 @@ val syncNullMarkedPackageTestFixtures by tasks.registering(Sync::class) {
     preserve.include("package-info.java")
 }
 
-tasks.register<Sync>("syncTestFixtures") {
-    var basePackage = "de.joshuagleitze.jspecify.interpreter.fixtures"
-    var baseDir = "test-fixtures/unnamed-module/src/main/java/${basePackage.replace('.', '/')}"
-    from("$baseDir/notmarked")
-    into("$baseDir/nullmarkedpackage") {
-        /*filter {
-            it.replace("package $basePackage.notmarked", "package $basePackage.nullmarkedpackage")
-        }*/
+val syncNullUnmarkedClassesTestFixtures by tasks.registering(Sync::class) {
+    fromTestFixturesPackage("notmarked")
+    intoTestFixturesPackage("nullunmarkedclass")
+    filter {
+        it.replace(Regex("^((?:public )?(?:record|class|interface))"), "@org.jspecify.annotations.NullUnmarked\n$1")
     }
-    into(baseDir)
+    preserve.include("package-info.java")
+}
 
-    preserve { include("**/package-info.java") }
+val syncNullMarkedClassesTestFixtures by tasks.registering(Sync::class) {
+    fromTestFixturesPackage("notmarked")
+    intoTestFixturesPackage("nullmarkedclass")
+    filter {
+        it.replace(Regex("^((?:public )?(?:record|class|interface))"), "@org.jspecify.annotations.NullMarked\n$1")
+    }
+}
+
+tasks.register("syncTestFixtures") {
+    dependsOn(syncNullMarkedPackageTestFixtures, syncNullUnmarkedClassesTestFixtures, syncNullMarkedClassesTestFixtures)
 }

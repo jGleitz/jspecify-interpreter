@@ -1,11 +1,9 @@
-package de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedclasses;
-
-import org.jspecify.annotations.NullMarked;
+package de.joshuagleitze.jspecify.interpreter.fixtures.nullunmarkedclass;
 
 import java.util.List;
 
 @SuppressWarnings("unused")
-@NullMarked
+@org.jspecify.annotations.NullUnmarked
 public interface NoAnnotations<T> {
 	String nullableString(String input);
 

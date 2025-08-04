@@ -1,9 +1,7 @@
-package de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedpackage.nullunmarkedclasses;
-
-import org.jspecify.annotations.NullUnmarked;
+package de.joshuagleitze.jspecify.interpreter.fixtures.nullunmarkedclass;
 
 @SuppressWarnings("unused")
-@NullUnmarked
+@org.jspecify.annotations.NullUnmarked
 public record EqualsInRecord() {
 	public boolean equals(Object a, Object b) {
 		return true;

@@ -1,13 +1,12 @@
-package de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedpackage.nullunmarkedclasses;
+package de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedclass;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 @SuppressWarnings({"unused", "NullableProblems"})
-@NullUnmarked
+@org.jspecify.annotations.NullMarked
 public interface BothAnnotations<T> {
 	@NonNull
 	@Nullable
