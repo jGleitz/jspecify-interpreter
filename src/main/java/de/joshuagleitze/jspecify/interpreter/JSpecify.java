@@ -8,13 +8,11 @@ import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.Set;
 
 import static de.joshuagleitze.jspecify.interpreter.NullnessOperator.*;
-import static java.util.Collections.emptySet;
 
 public class JSpecify implements JSpecifyInterpreter {
-	private final @Nullable Class<? extends Annotation> kotlinMetadataClass = tryFindKotlinMetadataAnnotationClass();
+	private static final @Nullable Class<? extends Annotation> KOTLIN_METADATA = tryFindKotlinMetadataAnnotationClass();
 
 	@Override
 	public NullnessOperator nullabilityOf(LocatedTypeUse type) {
@@ -90,7 +88,7 @@ public class JSpecify implements JSpecifyInterpreter {
 				&& type.getType().equals(Object.class);
 	}
 
-	private boolean isInNullMarkedScope(AnnotatedElement element) {
+	private static boolean isInNullMarkedScope(AnnotatedElement element) {
 		// following along [Null-marked scope](https://jspecify.dev/docs/spec/#null-marked-scope):
 		// At each declaration that is a recognized location, check the following rules in order:
 
@@ -107,7 +105,7 @@ public class JSpecify implements JSpecifyInterpreter {
 			return false;
 		}
 
-		var enclosingElement = getEnclosingElement(element);
+		var enclosingElement = enclosingElement(element);
 		if (enclosingElement != null) {
 			// Iterate over all the declarations that enclose the type usage, starting from the innermost.
 			return isInNullMarkedScope(enclosingElement);
@@ -117,7 +115,7 @@ public class JSpecify implements JSpecifyInterpreter {
 		return false;
 	}
 
-	private @Nullable AnnotatedElement getEnclosingElement(AnnotatedElement element) {
+	private static @Nullable AnnotatedElement enclosingElement(AnnotatedElement element) {
 		// following along [Null-marked scope](https://jspecify.dev/docs/spec/#null-marked-scope):
 		// > "Enclosing" is defined as follows:
 
@@ -155,32 +153,24 @@ public class JSpecify implements JSpecifyInterpreter {
 		);
 	}
 
-	private boolean isExplicitlyNullMarked(AnnotatedElement element, Set<Class<? extends Annotation>> recognisedAnnotations) {
-		return isRecognisedAndPresent(element, NullMarked.class, recognisedAnnotations)
-				&& !(isRecognisedAndPresent(element, NullUnmarked.class, recognisedAnnotations));
+	private static boolean isExplicitlyNullMarked(AnnotatedElement element, RecognisedDeclarationAnnotations location) {
+		return location.recognisesNullMarked() && element.isAnnotationPresent(NullMarked.class)
+				&& !(location.recognisesNullUnmarked() && element.isAnnotationPresent(NullUnmarked.class));
 	}
 
-	private boolean isExplicitlyNullUnmarked(AnnotatedElement element, Set<Class<? extends Annotation>> recognisedAnnotations) {
-		return isRecognisedAndPresent(element, NullUnmarked.class, recognisedAnnotations)
-				&& !(isRecognisedAndPresent(element, NullMarked.class, recognisedAnnotations));
+	private static boolean isExplicitlyNullUnmarked(AnnotatedElement element, RecognisedDeclarationAnnotations location) {
+		return location.recognisesNullUnmarked() && element.isAnnotationPresent(NullUnmarked.class)
+				&& !(location.recognisesNullMarked() && element.isAnnotationPresent(NullMarked.class));
 	}
 
-	private boolean isTopLevelClassWithKotlinMetadata(AnnotatedElement element) {
-		return kotlinMetadataClass != null
+	private static boolean isTopLevelClassWithKotlinMetadata(AnnotatedElement element) {
+		return KOTLIN_METADATA != null
 				&& element instanceof Class<?> clazz
 				&& clazz.getDeclaringClass() != null
-				&& element.isAnnotationPresent(kotlinMetadataClass);
+				&& element.isAnnotationPresent(KOTLIN_METADATA);
 	}
 
-	private boolean isRecognisedAndPresent(
-			AnnotatedElement element,
-			Class<? extends Annotation> annotation,
-			Set<Class<? extends Annotation>> recognisedAnnotations
-	) {
-		return recognisedAnnotations.contains(annotation) && element.isAnnotationPresent(annotation);
-	}
-
-	private Set<Class<? extends Annotation>> recognisedDeclarationAnnotations(AnnotatedElement element) {
+	private static RecognisedDeclarationAnnotations recognisedDeclarationAnnotations(AnnotatedElement element) {
 		// Following along [Recognized locations for declaration annotations](https://jspecify.dev/docs/spec/#recognized-declaration):
 
 		// > Our declaration annotations are specified to be recognized when applied to the locations listed below:
@@ -193,18 +183,18 @@ public class JSpecify implements JSpecifyInterpreter {
 		if (element instanceof Class<?>
 				|| element instanceof PackageInModule
 				|| element instanceof Executable) {
-			return Set.of(NullMarked.class, NullUnmarked.class);
+			return RecognisedDeclarationAnnotations.ALL;
 		} else if (element instanceof Module) {
-			return Set.of(NullMarked.class);
+			return RecognisedDeclarationAnnotations.ONLY_NULLMARKED;
 		} else {
-			return emptySet();
+			return RecognisedDeclarationAnnotations.NONE;
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private @Nullable Class<? extends Annotation> tryFindKotlinMetadataAnnotationClass() {
+	private static @Nullable Class<? extends Annotation> tryFindKotlinMetadataAnnotationClass() {
 		try {
-			var availableClass = getClass().getClassLoader().loadClass("kotlin.Metadata");
+			var availableClass = JSpecify.class.getClassLoader().loadClass("kotlin.Metadata");
 			if (availableClass.isAnnotation()) {
 				return (Class<? extends Annotation>) availableClass;
 			}
@@ -212,5 +202,45 @@ public class JSpecify implements JSpecifyInterpreter {
 		} catch (ClassNotFoundException e) {
 			return null;
 		}
+	}
+
+	private enum RecognisedDeclarationAnnotations {
+		ALL {
+			@Override
+			boolean recognisesNullMarked() {
+				return true;
+			}
+
+			@Override
+			boolean recognisesNullUnmarked() {
+				return true;
+			}
+		},
+		ONLY_NULLMARKED {
+			@Override
+			boolean recognisesNullMarked() {
+				return true;
+			}
+
+			@Override
+			boolean recognisesNullUnmarked() {
+				return false;
+			}
+		},
+		NONE {
+			@Override
+			boolean recognisesNullMarked() {
+				return false;
+			}
+
+			@Override
+			boolean recognisesNullUnmarked() {
+				return false;
+			}
+		};
+
+		abstract boolean recognisesNullMarked();
+
+		abstract boolean recognisesNullUnmarked();
 	}
 }

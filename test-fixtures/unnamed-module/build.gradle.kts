@@ -1,40 +1,23 @@
 plugins {
-    java
+    id("test-fixtures")
 }
 
-group = "de.joshuagleitze"
-version = "1.0-SNAPSHOT"
-val javaVersion = 17
-
-repositories {
-    mavenCentral()
+val syncNullMarkedPackageTestFixtures by tasks.registering(SyncTestFixtures::class) {
+    intoSubPackage("nullmarkedpackage")
+    preserve.include("package-info.java")
 }
 
-dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.38")
-
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
-
-    implementation("org.jspecify:jspecify:1.0.0")
-
-    testCompileOnly("org.projectlombok:lombok:1.18.38")
-
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
-
-    testImplementation(platform("org.junit:junit-bom:5.13.4"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.assertj:assertj-core:3.27.3")
-
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+val syncNullUnmarkedClassesTestFixtures by tasks.registering(SyncTestFixtures::class) {
+    intoSubPackage("nullunmarkedclass")
+    addOuterTypeAnnotation("org.jspecify.annotations.NullUnmarked")
+    preserve.include("package-info.java")
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(javaVersion)
-    }
+val syncNullMarkedClassesTestFixtures by tasks.registering(SyncTestFixtures::class) {
+    intoSubPackage("nullmarkedclass")
+    addOuterTypeAnnotation("org.jspecify.annotations.NullMarked")
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    options.release = javaVersion
-    options.compilerArgs.add("-parameters")
+tasks.register("syncTestFixtures") {
+    dependsOn(syncNullMarkedPackageTestFixtures, syncNullUnmarkedClassesTestFixtures, syncNullMarkedClassesTestFixtures)
 }

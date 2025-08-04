@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.AnnotatedType;
 
-import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
+import static de.joshuagleitze.types.TypeFormatting.*;
 
 /// Type use by an outer type declaration within a [LocatedTypeUse]. For example, `Outer` in `Outer.@Nullable Inner`.
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public final class LocatedOuterType extends BaseLocatedTypeUse {
 
 	@Override
 	void appendTo(StringBuilder result) {
-		appendFormatted(result, outerType);
+		appendFormattedMarked(result, outerType);
 		result.append(" in ");
 		appendFormatted(result, fullType);
 	}

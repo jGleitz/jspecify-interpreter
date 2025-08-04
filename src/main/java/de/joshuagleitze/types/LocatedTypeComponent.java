@@ -8,6 +8,7 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 
 import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
+import static de.joshuagleitze.types.TypeFormatting.appendFormattedMarked;
 
 /// A type use by a component of an [AnnotatedParameterizedType] or an [AnnotatedArrayType]. For example, `@Nullable String` in
 /// `List<@Nullable String>` or `@Nullable String[]`.
@@ -30,7 +31,7 @@ public final class LocatedTypeComponent extends BaseLocatedTypeUse {
 
 	@Override
 	void appendTo(StringBuilder result) {
-		appendFormatted(result, component);
+		appendFormattedMarked(result, component);
 		result.append(" in ");
 		appendFormatted(result, outerType);
 	}

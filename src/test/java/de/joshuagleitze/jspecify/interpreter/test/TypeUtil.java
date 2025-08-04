@@ -1,4 +1,4 @@
-package de.joshuagleitze.jspecify.interpreter;
+package de.joshuagleitze.jspecify.interpreter.test;
 
 import de.joshuagleitze.types.LocatedParameterType;
 import de.joshuagleitze.types.LocatedReturnType;

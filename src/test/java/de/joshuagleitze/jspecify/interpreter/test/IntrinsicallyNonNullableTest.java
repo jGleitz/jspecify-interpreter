@@ -1,5 +1,7 @@
-package de.joshuagleitze.jspecify.interpreter;
+package de.joshuagleitze.jspecify.interpreter.test;
 
+import de.joshuagleitze.jspecify.interpreter.JSpecify;
+import de.joshuagleitze.jspecify.interpreter.JSpecifyInterpreter;
 import de.joshuagleitze.jspecify.interpreter.fixtures.*;
 import de.joshuagleitze.types.*;
 import org.junit.jupiter.api.*;

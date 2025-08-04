@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 
 import java.lang.reflect.AnnotatedType;
 
-import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
+import static de.joshuagleitze.types.TypeFormatting.appendFormattedMarked;
 
 /// A type use by a declaration of a superclass of a [Class]. For example, `ArrayList<@Nullable T>` in `class NullList<T> extends
 /// ArrayList<@Nullable T>`.
@@ -37,7 +37,7 @@ public final class LocatedSuperclass extends BaseLocatedTypeUse {
 	@Override
 	void appendTo(StringBuilder result) {
 		result.append("extends ");
-		appendFormatted(result, superClassType);
+		appendFormattedMarked(result, superClassType);
 		result.append(" of ");
 		result.append(declaringClass.getSimpleName());
 	}

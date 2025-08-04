@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.RecordComponent;
 
-import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
+import static de.joshuagleitze.types.TypeFormatting.appendFormattedMarked;
 
 /// A type use by a [RecordComponent]. For example, `@Nullable String` in `record Person(@Nullable String name)`.
 @EqualsAndHashCode(callSuper = false)
@@ -32,7 +32,7 @@ public final class LocatedRecordComponentType extends BaseLocatedTypeUse {
 
 	@Override
 	void appendTo(StringBuilder result) {
-		appendFormatted(result, recordComponentType);
+		appendFormattedMarked(result, recordComponentType);
 		result.append(' ')
 				.append(recordComponent.getName())
 				.append(" of ")
