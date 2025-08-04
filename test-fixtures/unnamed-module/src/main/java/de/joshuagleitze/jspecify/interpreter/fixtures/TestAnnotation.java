@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 
+@SuppressWarnings("unused")
 public @interface TestAnnotation {
     String noAnnotationString();
 
