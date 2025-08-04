@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 import java.lang.reflect.*;
 
 @UtilityClass
-public class TypeFormatting {
+class TypeFormatting {
 	static void appendFormatted(StringBuilder result, Executable executable) {
 		if (executable instanceof Method method) {
 			appendFormatted(result, method);
@@ -38,6 +38,12 @@ public class TypeFormatting {
 			result.append(parameters[i].getType().getSimpleName());
 		}
 		result.append(')');
+	}
+
+	static void appendFormattedMarked(StringBuilder result, AnnotatedType type) {
+		startType(result);
+		appendFormatted(result, type);
+		endType(result);
 	}
 
 	static void appendFormatted(StringBuilder result, AnnotatedType type) {
@@ -136,6 +142,14 @@ public class TypeFormatting {
 				appendFormatted(result, bounds[i]);
 			}
 		}
+	}
+
+	static void startType(StringBuilder result) {
+		result.append('«');
+	}
+
+	static void endType(StringBuilder result) {
+		result.append('»');
 	}
 
 	static void appendFormatted(StringBuilder result, Type type) {

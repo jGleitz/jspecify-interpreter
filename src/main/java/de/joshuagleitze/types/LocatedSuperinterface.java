@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.lang.reflect.AnnotatedType;
 
 import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
+import static de.joshuagleitze.types.TypeFormatting.appendFormattedMarked;
 
 /// A type use by a declaration of a superinterface of a [Class]. This can either be in the `implements …` clause of a class declaration or
 /// the `extends …` clause of an interface declaration. For example, `List<@Nullable T>` in `class NullList<T> implements List<@Nullable
@@ -30,7 +31,7 @@ public final class LocatedSuperinterface extends BaseLocatedTypeUse {
 	@Override
 	void appendTo(StringBuilder result) {
 		result.append(declaringClass.isInterface() ? "extends " : "implements ");
-		appendFormatted(result, superInterfaceType);
+		appendFormattedMarked(result, superInterfaceType);
 		result.append(" of ");
 		appendFormatted(result, declaringClass);
 	}

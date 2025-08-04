@@ -14,7 +14,7 @@ import static de.joshuagleitze.jspecify.interpreter.NullnessOperator.*;
 import static java.util.Collections.emptySet;
 
 public class JSpecify implements JSpecifyInterpreter {
-	private final @Nullable Class<? extends Annotation> kotlinMetadataClass = tryFindKotlinMetadataAnnotationClass();
+	private static final @Nullable Class<? extends Annotation> KOTLIN_METADATA = tryFindKotlinMetadataAnnotationClass();
 
 	@Override
 	public NullnessOperator nullabilityOf(LocatedTypeUse type) {
@@ -90,7 +90,7 @@ public class JSpecify implements JSpecifyInterpreter {
 				&& type.getType().equals(Object.class);
 	}
 
-	private boolean isInNullMarkedScope(AnnotatedElement element) {
+	private static boolean isInNullMarkedScope(AnnotatedElement element) {
 		// following along [Null-marked scope](https://jspecify.dev/docs/spec/#null-marked-scope):
 		// At each declaration that is a recognized location, check the following rules in order:
 
@@ -117,7 +117,7 @@ public class JSpecify implements JSpecifyInterpreter {
 		return false;
 	}
 
-	private @Nullable AnnotatedElement getEnclosingElement(AnnotatedElement element) {
+	private static @Nullable AnnotatedElement getEnclosingElement(AnnotatedElement element) {
 		// following along [Null-marked scope](https://jspecify.dev/docs/spec/#null-marked-scope):
 		// > "Enclosing" is defined as follows:
 
@@ -155,24 +155,24 @@ public class JSpecify implements JSpecifyInterpreter {
 		);
 	}
 
-	private boolean isExplicitlyNullMarked(AnnotatedElement element, Set<Class<? extends Annotation>> recognisedAnnotations) {
+	private static boolean isExplicitlyNullMarked(AnnotatedElement element, Set<Class<? extends Annotation>> recognisedAnnotations) {
 		return isRecognisedAndPresent(element, NullMarked.class, recognisedAnnotations)
 				&& !(isRecognisedAndPresent(element, NullUnmarked.class, recognisedAnnotations));
 	}
 
-	private boolean isExplicitlyNullUnmarked(AnnotatedElement element, Set<Class<? extends Annotation>> recognisedAnnotations) {
+	private static boolean isExplicitlyNullUnmarked(AnnotatedElement element, Set<Class<? extends Annotation>> recognisedAnnotations) {
 		return isRecognisedAndPresent(element, NullUnmarked.class, recognisedAnnotations)
 				&& !(isRecognisedAndPresent(element, NullMarked.class, recognisedAnnotations));
 	}
 
-	private boolean isTopLevelClassWithKotlinMetadata(AnnotatedElement element) {
-		return kotlinMetadataClass != null
+	private static boolean isTopLevelClassWithKotlinMetadata(AnnotatedElement element) {
+		return KOTLIN_METADATA != null
 				&& element instanceof Class<?> clazz
 				&& clazz.getDeclaringClass() != null
-				&& element.isAnnotationPresent(kotlinMetadataClass);
+				&& element.isAnnotationPresent(KOTLIN_METADATA);
 	}
 
-	private boolean isRecognisedAndPresent(
+	private static boolean isRecognisedAndPresent(
 			AnnotatedElement element,
 			Class<? extends Annotation> annotation,
 			Set<Class<? extends Annotation>> recognisedAnnotations
@@ -180,7 +180,7 @@ public class JSpecify implements JSpecifyInterpreter {
 		return recognisedAnnotations.contains(annotation) && element.isAnnotationPresent(annotation);
 	}
 
-	private Set<Class<? extends Annotation>> recognisedDeclarationAnnotations(AnnotatedElement element) {
+	private static Set<Class<? extends Annotation>> recognisedDeclarationAnnotations(AnnotatedElement element) {
 		// Following along [Recognized locations for declaration annotations](https://jspecify.dev/docs/spec/#recognized-declaration):
 
 		// > Our declaration annotations are specified to be recognized when applied to the locations listed below:
@@ -202,9 +202,9 @@ public class JSpecify implements JSpecifyInterpreter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private @Nullable Class<? extends Annotation> tryFindKotlinMetadataAnnotationClass() {
+	private static @Nullable Class<? extends Annotation> tryFindKotlinMetadataAnnotationClass() {
 		try {
-			var availableClass = getClass().getClassLoader().loadClass("kotlin.Metadata");
+			var availableClass = JSpecify.class.getClassLoader().loadClass("kotlin.Metadata");
 			if (availableClass.isAnnotation()) {
 				return (Class<? extends Annotation>) availableClass;
 			}

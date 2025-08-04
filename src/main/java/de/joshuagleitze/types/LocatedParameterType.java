@@ -6,6 +6,7 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Parameter;
 
 import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
+import static de.joshuagleitze.types.TypeFormatting.appendFormattedMarked;
 
 /// A type use by a [Parameter]. For example, `@Nullable String` in `void isFriend(@Nullable String name)`.
 @EqualsAndHashCode(callSuper = false)
@@ -33,7 +34,7 @@ public final class LocatedParameterType extends BaseLocatedTypeUse {
 
 	@Override
 	void appendTo(StringBuilder result) {
-		appendFormatted(result, parameterType);
+		appendFormattedMarked(result, parameterType);
 		result.append(' ');
 		result.append(parameter.getName());
 		result.append(" declared by ");

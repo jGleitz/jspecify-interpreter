@@ -1,5 +1,8 @@
-package de.joshuagleitze.jspecify.interpreter;
+package de.joshuagleitze.jspecify.interpreter.test;
 
+import de.joshuagleitze.jspecify.interpreter.JSpecify;
+import de.joshuagleitze.jspecify.interpreter.JSpecifyInterpreter;
+import de.joshuagleitze.jspecify.interpreter.NullnessOperator;
 import de.joshuagleitze.types.LocatedParameterType;
 import de.joshuagleitze.types.LocatedTypeUse;
 import org.junit.jupiter.api.*;
@@ -26,6 +29,8 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 				'in a @NullMarked package',                              NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedpackage
 				'in a @NullMarked class',                                NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedclass
 				'in a @NullUnmarked class within a @NullMarked package', UNSPECIFIED,                   de.joshuagleitze.jspecify.interpreter.fixtures.nullunmarkedclass
+				'in a @NullMarked module',                               NO_CHANGE,                     de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedmodule.notmarked
+				'in a @NullUnmarked package in a @NullMarked module',    UNSPECIFIED,                   de.joshuagleitze.jspecify.interpreter.fixtures.nullmarkedmodule.nullunmarkedpackage
 				"""
 )
 @TestInstance(PER_CLASS)

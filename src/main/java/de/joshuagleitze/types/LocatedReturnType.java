@@ -6,6 +6,7 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
 
 import static de.joshuagleitze.types.TypeFormatting.appendFormatted;
+import static de.joshuagleitze.types.TypeFormatting.appendFormattedMarked;
 
 /// A type use by a return type of a [Method]. For example, `@Nullable String` in `@Nullable String getName()`.
 @EqualsAndHashCode(callSuper = false)
@@ -32,7 +33,7 @@ public final class LocatedReturnType extends BaseLocatedTypeUse {
 
 	@Override
 	void appendTo(StringBuilder result) {
-		appendFormatted(result, returnType);
+		appendFormattedMarked(result, returnType);
 		result.append(" returned by ");
 		appendFormatted(result, method);
 	}
